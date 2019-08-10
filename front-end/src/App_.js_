@@ -1,0 +1,162 @@
+import React from 'react';
+import logo from './blockhub.png';
+import './App.css';
+import Button from '@material-ui/core/Button';
+import { withStyles } from '@material-ui/core/styles';
+
+import axios from 'axios';
+import qrcode from 'qrcode';
+
+import openSocket from 'socket.io-client';
+const socket = openSocket('http://localhost:8007');
+
+const styles = theme => ({
+  root: {
+    flexGrow: 1,
+    overflow: 'hidden',
+    backgroundSize: 'cover',
+    backgroundPosition: '0 400px',
+    paddingBottom: 10
+  },
+  button: {
+    margin: theme.spacing(1),
+    color: "white",
+    borderColor: "white"
+  },
+  input: {
+    display: 'none',
+  },
+});
+
+// const opennodeApiKey = '598e5042-9044-4c1a-bdd7-3f7a8cf8e006';
+
+
+class App extends React.Component {
+
+  state={
+    qr: '',
+    showQr: true,
+    showButt: false,
+    showInvite: true,
+    invoiceID: '',
+    showError: true,
+    countdown: 600000,
+  }
+
+  constructor(props){
+    super(props);
+    this.getInvoiceLN = this.getInvoiceLN.bind(this);
+    this.loadQrCode = this.loadQrCode.bind(this);
+    this.waitForPayment = this.waitForPayment.bind(this);
+    this.paymentCompleted = this.paymentCompleted.bind(this);
+
+    
+    
+  }
+
+  async getInvoiceLN(){
+    
+    var postData = {
+        description: "Welcome to Block-Hub.io",
+        amount: "1",
+        auto_settle: false 
+    };
+    let axiosConfig = {
+      headers: {
+        'Authorization': '598e5042-9044-4c1a-bdd7-3f7a8cf8e006',
+        'content-type': 'application/json'
+      }
+    };
+
+    axios.post('https://dev-api.opennode.co/v1/charges', postData, axiosConfig).then((response) => {
+        console.log(response);
+        this.setState({invoiceID: response.data.data.id});
+        console.log(this.state.invoiceID);
+        this.loadQrCode(response.data.data.lightning_invoice.payreq);
+    });
+
+  }
+
+  async loadQrCode(BOLT11){
+    const qrCode = await qrcode.toDataURL(BOLT11, { margin: 2, width: 300 });
+    // this.setQrCode(qrCode);
+    this.setState({qr: qrCode, showButt: true, showQr: false});
+    this.waitForPayment();
+  }
+
+  async waitForPayment(){
+    /* this.interval = setInterval(() => {
+      this.checkInvoice();
+    }, 1000); */
+    console.log(this.state.invoiceID);
+    var id = this.state.invoiceID;
+    this.interval = setInterval(() => {
+      this.setState({countdown: this.state.countdown - 1000});
+    },1000);
+    axios({ method: 'get', timeout: 0 ,url:'http://localhost:3005/fetchInvoice/' + id }).then((response) => {
+        console.log(response.data.success);
+        if(response.data.success === true){
+          this.paymentCompleted();
+        }else{
+          this.setState({showError: false, showButt: true, showInvite: true, showQr: true});
+        }
+    }).catch(error => {
+      console.log(error)
+    });
+  }
+
+ 
+
+  async checkInvoice(){
+    //console.log("sup");
+    let axiosConfig = {
+      headers: {
+        'Authorization': '598e5042-9044-4c1a-bdd7-3f7a8cf8e006',
+        'content-type': 'application/json'
+      }
+    };
+    axios.get('https://dev-api.opennode.co/v1/charge/' + this.state.invoiceID, axiosConfig).then((response) => {
+        if(response.data.data.status === "paid"){
+          this.paymentCompleted();
+        }
+    });
+  }
+
+  async paymentCompleted(){
+    console.log("done");
+    this.setState({showInvite:false, showQr: true});
+    clearInterval(this.interval);
+  }
+  
+  async generateInvite(){
+    // Discord bot id: NjA3NjEzODgzMzU1NzU4NjAy.XUdAog.JfZ2vpZY9db8LLsic8z498uNZIs
+  }
+
+  render(){
+    const { classes } = this.props;
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <h3>
+         Welcome to Block-Hub.io
+        </h3>
+        <div hidden={this.state.showButt}>
+          <Button variant="outlined" className={classes.button} onClick={this.getInvoiceLN}>
+            Generate Access
+          </Button>
+        </div>
+        <div hidden={this.state.showQr}>
+          <img className="" src={this.state.qr.toString()} alt={""} />
+          <p>Countdown: {this.state.countdown}</p>
+        </div>
+        <div hidden={this.state.showInvite}>
+          Thanks for dah money my bruddah
+        </div>
+      </header>
+    </div>
+  );
+  }
+}
+
+export default withStyles(styles, { withTheme: true })(App);

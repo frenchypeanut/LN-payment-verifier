@@ -1,0 +1,144 @@
+const express = require('express')
+var bodyParser = require('body-parser');
+
+const app = express();
+
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(bodyParser.json());
+
+const port = 3005;
+const request = require('request');
+const Discord = require('discord.js');
+const client = new Discord.Client();
+
+const http = require('http')
+
+const opennodeApiKey = '598e5042-9044-4c1a-bdd7-3f7a8cf8e006';
+
+const io = require('socket.io')();
+
+const port_io = 8007;
+io.listen(port_io);
+
+console.log('listening on port ', port_io);
+
+
+io.on('connection', (socket) => {
+  console.log("Connected to Socket for Lightning interactions!   "+ socket.id)
+
+  socket.on('disconnect', function(){
+		console.log('Disconnected - '+ socket.id);
+  });
+  
+  socket.on('invoicePayment', (invoiceData) => {
+    console.log("invoice waiting for payment: " + invoiceData);
+    var  unpaid = true;
+
+      /* var interval = setInterval(function() {
+        const options = {
+          method: 'GET',
+          url: 'https://dev-api.opennode.co/v1/charge/'+ invoiceData, 
+          headers:{
+              Authorization: opennodeApiKey
+          }
+        };
+        try{
+          request(options, (err, req, body) => {
+              // console.log(body);
+              const info = JSON.parse(body);
+              console.log(info.data.id + " - " + info.data.status);
+              if(info.data.status === "paid"){
+                clearInterval(interval);
+                io.emit('paymentComplete', true);
+              }
+        });
+        }catch(e){
+          console.log(e);
+          clearInterval(interval);
+          io.emit('paymentComplete', false);
+        } 
+      }, 1000);
+
+      setTimeout(function(){
+        console.log("stopuuuuu");
+        clearInterval(interval);
+        io.emit('paymentComplete', false);
+      }, 599999); // 1000 = 1sec */
+
+  })
+
+});
+
+
+
+
+app.get('/', (req, res) => {
+  return res.send('Hello World!')
+});
+
+/* app.get("/fetchInvoice/:id", async (req, res, next) => {
+
+  var  unpaid = true;
+
+  var interval = setInterval(() => {
+    const options = {
+      method: 'GET',
+      url: 'https://dev-api.opennode.co/v1/charge/'+req.params.id, 
+      headers:{
+          Authorization: opennodeApiKey
+      }
+    };
+
+    try{
+      request(options, (err, req, body) => {
+          const info = JSON.parse(body);
+          console.log(info.data.id + " - " + info.data.status);
+          if(info.data.status === "paid"){
+            clearInterval(this.interval);
+            return res.json({ success: true });
+          }
+    });
+    }catch(e){
+      console.log(e);
+      clearInterval(this.interval);
+      return res.json({ success: false});
+    } 
+
+  }, 1000);
+
+    setTimeout(function(){
+      console.log("stopuuuuu");
+      clearInterval(interval);
+      return res.json({ success: false});
+    }, 599999); // 1000 = 1sec
+
+});*/ 
+
+app.get("/qwefetchInvoice/:id/wait", async (req, res, next) => {
+      let invoice = req.params.id;
+      const paid = null;
+      console.log(invoice);
+      do {
+        try{
+        const paid = await ln_charge.wait(
+          invoice,
+          600 /* 10 minutes timeout */
+        );
+        }catch(e){console.log(e);}
+      if (paid) return res.json({ success: true, data: invoice });
+      else if (paid === false)
+        console.log("invoice expired and can no longer be paid");
+      else if (paid === null)
+        console.log("timeout reached without payment");
+      } while (paid === null);
+  });
+
+app.post("/paymentComplete", async (req, res, next) => {
+  // console.log("Oh hi Marc!");
+  // console.log(req.body.status);
+  io.emit('paymentComplete', true);
+  return res.send('ekino.com')
+});
+
+app.listen(port, () => console.log(`Example app listening on port ${port}!`))

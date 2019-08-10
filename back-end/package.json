@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "discord.js": "^11.5.1",
+    "express": "^4.17.1",
+    "lightning-charge-client": "^0.1.10",
+    "opennode": "^1.1.1",
+    "request": "^2.88.0",
+    "socket.io": "^2.2.0"
+  }
+}
