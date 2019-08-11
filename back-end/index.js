@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
             amount: 0.01,
             description: "block-hub.xyz",
             currency: "JPY",
-            callback_url: "http://52085d64.ngrok.io/paymentComplete",
+            callback_url: "http://localhost:3005/paymentComplete",
             auto_settle: false
         });
         console.log(charge);
