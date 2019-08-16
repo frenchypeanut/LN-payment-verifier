@@ -14,8 +14,8 @@ const http = require('http');
 
 const opennode = require('opennode');
 
-
-const opennodeApiKey = '598e5042-9044-4c1a-bdd7-3f7a8cf8e006';
+// const opennodeApiKey = '598e5042-9044-4c1a-bdd7-3f7a8cf8e006';
+const opennodeApiKey = 'b03562d1-c748-432c-904c-07dffd9b3479';
 
 const io = require('socket.io')();
 
@@ -36,8 +36,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('newInvoice', async function(){
-    opennode.setCredentials('598e5042-9044-4c1a-bdd7-3f7a8cf8e006', 'dev'); //if no parameter given, default environment is 'live'
-    //(async ()=> {
+    // opennode.setCredentials('598e5042-9044-4c1a-bdd7-3f7a8cf8e006', 'dev'); //if no parameter given, default environment is 'live'
+    opennode.setCredentials('b03562d1-c748-432c-904c-07dffd9b3479'); //if no parameter given, default environment is 'live'
+    //(async ()=> { b03562d1-c748-432c-904c-07dffd9b3479
     try {
         const charge = await opennode.createCharge({
             amount: 0.01,

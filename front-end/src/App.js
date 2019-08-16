@@ -35,8 +35,6 @@ const styles = theme => ({
   }
 });
 
-// const opennodeApiKey = '598e5042-9044-4c1a-bdd7-3f7a8cf8e006';
-
 
 class App extends React.Component {
 
