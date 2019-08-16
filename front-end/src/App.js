@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from './bh.png';
+import logo from './bh_noB.png';
 import './App.css';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
@@ -29,8 +29,8 @@ const styles = theme => ({
     display: 'none',
   },
   invoiceText: {
-    fontSize: 20,
-    maxWidth: 1100,
+    fontSize: 16,
+    maxWidth: 750,
     overflowWrap: 'break-word'
   }
 });
@@ -88,7 +88,7 @@ class App extends React.Component {
   }
 
   async loadQrCode(BOLT11){
-    const qrCode = await qrcode.toDataURL(BOLT11, { margin: 2, width: 300 });
+    const qrCode = await qrcode.toDataURL(BOLT11, { margin: 1, width: 200 });
     this.setState({qr: qrCode, showButt: true, showQr: false});
     this.waitForPayment();
   }
@@ -154,9 +154,10 @@ class App extends React.Component {
           </Button>
         </div>
         <div hidden={this.state.showQr}>
+          <p className="textStuff"><b>Veuillez effectuer un paiement lightning de 1 satoshi afin de valider votre entrée:</b></p>
           <img className="" src={this.state.qr.toString()} alt={""} />
           <p className={classes.invoiceText}>{this.state.invoiceLN}</p>
-          <p><b>Temps restant pour le paiment LN :  </b> {this.state.remainingTime}</p>
+          <p className="timeLeft"><b>Temps restant pour le paiment LN :  </b> {this.state.remainingTime}</p>
         </div>
         <div hidden={this.state.showInvite}>
           Paiement validé, veuillez patienter . . .

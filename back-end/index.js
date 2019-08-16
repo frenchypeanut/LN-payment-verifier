@@ -43,7 +43,9 @@ io.on('connection', (socket) => {
             amount: 0.01,
             description: "block-hub.xyz",
             currency: "JPY",
-            callback_url: "http://localhost:3005/paymentComplete",
+            // Change this line!!!
+            callback_url: "http://52085d64.ngrok.io/paymentComplete",
+            // callback_url: "http://block-hub.xyz:3000/paymentComplete",
             auto_settle: false
         });
         console.log(charge);
@@ -67,7 +69,7 @@ app.post("/paymentComplete", async (req, res, next) => {
   {
     io.emit('paymentComplete', true);
   }
-  return res.send('ekino.com')
+  return res.send('block-hub.xyz');
 });
 
 app.listen(port, () => console.log(`Lightning API listening on port ${port}!`))
