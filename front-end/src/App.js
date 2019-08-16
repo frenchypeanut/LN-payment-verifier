@@ -10,7 +10,8 @@ import qrcode from 'qrcode';
 import  { Redirect } from 'react-router-dom'
  
 import openSocket from 'socket.io-client';
-const socket = openSocket('http://localhost:8007');
+// const socket = openSocket('http://localhost:8007');
+const socket = openSocket('http://ec2-15-188-14-184.eu-west-3.compute.amazonaws.com:8007');
 
 const styles = theme => ({
   root: {
