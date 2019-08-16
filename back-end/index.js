@@ -46,7 +46,8 @@ io.on('connection', (socket) => {
             currency: "JPY",
             // Change this line!!!
             // callback_url: "http://52085d64.ngrok.io/paymentComplete",
-            callback_url: "http://block-hub.xyz:3000/paymentComplete",
+            // callback_url: "http://block-hub.xyz:3000/paymentComplete",
+            callback_url: "http://ec2-15-188-14-184.eu-west-3.compute.amazonaws.com:3005/paymentComplete",
             auto_settle: false
         });
         console.log(charge);
