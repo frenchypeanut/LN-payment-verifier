@@ -143,9 +143,9 @@ class App extends React.Component {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <h4>
+        <h5>
          La communauté Crypto n°1 en France
-        </h4>
+        </h5>
         <div hidden={this.state.showButt}>
           <Button variant="outlined" className={classes.button} onClick={this.getInvoiceLN}>
             Accèder au serveur Discord
